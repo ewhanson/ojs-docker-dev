@@ -1,0 +1,8 @@
+.git
+*/**/.gitkeep
+vendor
+node_modules
+app/www/node_modules
+app/www/lib/pkp/lib/vendor
+app/www/plugins/generic/citationStyleLanguage/lib/vendor
+app/www/plugins/paymethod/paypal/vendor

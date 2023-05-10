@@ -1,27 +1,42 @@
 version: '3'
+# The development environment is composed of two base services:
+# 1) the custom PHP/Apache container based on php:8.0-apache, and
+# 2) the official mariadb image
+#
+# A MySQL image can be used as a drop-in replacement for the mariadb image and the Dockerfile could also be adapted
+# to support Postgres.
 services:
-  web:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./app:/app
-  php:
+  pkp_app:
+    # Rather than using a pre-built image, this uses the Dockerfile located in the conf directory
     build:
-      context: .
-      dockerfile: PHP.Dockerfile
+      context: ./conf
+      dockerfile: Dockerfile
+    # The port to use for serving the site. Will default to 8080 but can be configured via the .env file
+    ports:
+      - "${APP_PORT:-8080}:80"
     volumes:
+      # Mounts the local app directory to the container's app directory. This allows, among other things, the editing
+      # and debugging of OJS from the host machine while having any change reflected inside the container.
       - ./app:/app
-      - ./xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-  mysql:
+      # This mounts the necessary xdebug config to the container.
+      # The xdebug.client_host must remain as-is, but the rest of the settings can be configured as desired.
+      - ./conf/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    # This is used as the entrypoint for the container. It is included as a convenience and calls the underlying
+    # `apache2-foreground` Docker CMD at the end. It will install all the required npm and composer dependencies
+    # needed for OJS to run. This remove the need to individually run each of the commands within the container
+    # when the container is first started. If the dependencies are already installed, they will not be deleted or reinstalled.
+    command: sh /app/entrypoint.sh
+  database:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: 'rootPassword'
-      MYSQL_USER: 'admin'
-      MYSQL_PASSWORD: 'admin'
-      MYSQL_DATABASE: 'db_name'
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-rootPassword123}"
+      MYSQL_USER: "${MYSQL_USER:-admin}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-admin}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE:-db_name}"
     volumes:
+      # This uses the Docker volume specified below as the data directory for the database. If desired, this could be
+      # set to a directory on the host machine and mounted to the container the same as the volumes for `pkp_app`.
+      # E.g. ./mysql_data:/var/lib/mysql
       - mysqldata:/var/lib/mysql
 volumes:
   mysqldata: {}

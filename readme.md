@@ -1,6 +1,6 @@
 # OJS Docker Development Environment
 
-A Docker-base development environment for OJS/OMP/OPS.
+A Docker-based development environment for OJS/OMP/OPS.
 
 The purpose of this repository is to provide an easy and convenient solution for completing development work, testing, and debugging within PKP applications, regardless of the version/tech stack required.
 

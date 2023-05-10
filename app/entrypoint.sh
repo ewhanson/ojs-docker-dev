@@ -9,34 +9,38 @@
 
 set -e
 
-echo "📦 Checking for npm/composer dependencies..."
-
-if [ ! -d "node_modules" ]; then
-  npm install && npm run build > /dev/null
-  echo "✅ Dependencies added via: npm install && npm run build"
+if [ ! -e "config.TEMPLATE.inc.php" ]; then
+  echo "❌ Directory app/www does not contain a valid OJS installation. Skipping dependency checks..."
 else
-  echo "✅ Already installed: npm dependencies"
-fi
+  echo "📦 Checking for npm/composer dependencies..."
 
-if [ ! -d "lib/pkp/lib/vendor" ]; then
-  composer --working-dir=lib/pkp install > /dev/null
-  echo "✅ Dependencies added via: composer --working-dir=lib/pkp install"
-else
-  echo "✅ Already installed: pkp-lib composer dependencies"
-fi
+  if [ ! -d "node_modules" ]; then
+    npm install && npm run build > /dev/null
+    echo "✅ Dependencies added via: npm install && npm run build"
+  else
+    echo "✅ Already installed: npm dependencies"
+  fi
 
-if [ ! -d "plugins/generic/citationStyleLanguage/lib/vendor" ]; then
-  composer --working-dir=plugins/generic/citationStyleLanguage install > /dev/null
-  echo "✅ Dependencies added via: composer --working-dir=plugins/generic/citationStyleLanguage install"
-else
-  echo "✅ Already installed: citationStyleLanguage composer dependencies"
-fi
+  if [ ! -d "lib/pkp/lib/vendor" ]; then
+    composer --working-dir=lib/pkp install > /dev/null
+    echo "✅ Dependencies added via: composer --working-dir=lib/pkp install"
+  else
+    echo "✅ Already installed: pkp-lib composer dependencies"
+  fi
 
-if [ ! -d "plugins/paymethod/paypal/vendor" ]; then
-  composer --working-dir=plugins/paymethod/paypal install > /dev/null
-  echo "✅ Dependencies added via: composer --working-dir=plugins/paymethod/paypal install"
-else
-  echo "✅ Already installed: paypal composer dependencies"
+  if [ ! -d "plugins/generic/citationStyleLanguage/lib/vendor" ]; then
+    composer --working-dir=plugins/generic/citationStyleLanguage install > /dev/null
+    echo "✅ Dependencies added via: composer --working-dir=plugins/generic/citationStyleLanguage install"
+  else
+    echo "✅ Already installed: citationStyleLanguage composer dependencies"
+  fi
+
+  if [ ! -d "plugins/paymethod/paypal/vendor" ]; then
+    composer --working-dir=plugins/paymethod/paypal install > /dev/null
+    echo "✅ Dependencies added via: composer --working-dir=plugins/paymethod/paypal install"
+  else
+    echo "✅ Already installed: paypal composer dependencies"
+  fi
 fi
 
 echo "ℹ️  npm and composer dependencies can be updated/reinstalled directly from within the container as needed"

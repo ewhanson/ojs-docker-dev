@@ -6,7 +6,7 @@ The purpose of this repository is to provide an easy and convenient solution for
 
 ## Features
 
-- PHP 8.0
+- PHP
 - Apache
 - MariaDB
 - XDebug

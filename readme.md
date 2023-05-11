@@ -31,10 +31,11 @@ git clone https://github.com/pkp/ojs tmp && mv tmp/* app/www && rm -rf tmp
 4) Copy the installation's files directory into `app/files`.
 5) Make a copy of `.env.example` called `.env` and add any relevant configuration settings.
 6) Start the containers with `docker-compose up`. Optionally use the `-d` flag to run in detached mode. The first time `docker-compose up` is run for an installation, the npm and composer dependencies will be automatically installed. See `app/entrypoint.sh` for more details.
-7) Once the containers are up and running, import the database dump:
+7) Once the containers are up and running, import the database dump. The currently recommended path to import the database from the host machine will require reading the environmental variables from `.env` and referencing the mysql password that way (as described below)
 
 ```bash
-docker-compose exec -iT database mysql {{db_name}} -u {{db_username}} -p < {{backup.sql}}
+source .env # Where .env contains MYSQL_PASSWORD=mySecurePassword123
+docker-compose exec -iT database mysql {{db_name}} -u {{db_username}} --password=$MYSQL_PASSWORD < {{backup.sql}}
 ```
 
 8) Edit/hack as needed!
@@ -63,10 +64,20 @@ This is also how you can get shell access inside the container. Assuming the php
 docker-compose exec -it pkp_app bash
 ```
 
+The current setup assumes you are using a Docker volume for the database. If you would like to wipe it clean, but not delete the volume, you can run the following command:
+
+```bash
+# To check the name of the docker volume run:
+docker volume ls
+# To empty the volume, run:
+docker volume rm -f <volume-name>
+```
+
 ## TODOs
 
 There are probably a lot of ways this approach can be improved. Some current issues/pain points include:
 - [ ] Having the "empty" `app/www` directory with a `.gitkeep` file and cloning OJS into it can be awkward. Hoping to strike a balance between having a ready to use environment when downloading this setup and making it easy to switch between apps used/install data.
 - [ ] Currently, the entire `pkp_app` container process fails if any of the `entrypoint.sh` steps fail.
-- [ ] The images are quite large as well as the database volume (~200MB fresh). It's worth exploring way to reduce the size while maintaining all the development features (For reference, the images aren't wildly bigger than the Laravel Sail container images, which these are loosely based on).
+- [ ] The images are quite large as well as the database volume (~200MB fresh). It's worth exploring way to reduce the size while maintaining all the development features (For reference, the images aren't wildly bigger than the [Laravel Sail](https://laravel.com/docs/10.x/sail) container images, which these are loosely based on).
 - [ ] The setup currently assumes one OJS install per single set of PHP/Apache/MySQL containers. Not sure if this is a problem, but it's worth noting.
+- [ ] See if loading the mysql password from the `.env` file and referencing it that way is the best way to import the database dump without exposing the mysql password.

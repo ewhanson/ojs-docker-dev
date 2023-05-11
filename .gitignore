@@ -1,1 +1,8 @@
-   .env
+# Ignore everything in the app/* subdirectories
+app/www/*
+app/files/*
+# Except for the .gitkeep files
+!app/www/.gitkeep
+!app/files/.gitkeep
+
+.env

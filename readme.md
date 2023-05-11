@@ -14,7 +14,7 @@ The purpose of this repository is to provide an easy and convenient solution for
 
 ## Setup
 
-All instructions will assume you are setting up an existing OJS installation for development work.
+All instructions will assume you are setting up an existing OJS installation for development work. Docker-related and setup files have been thoroughly commented. 
 
 1) `docker` and `docker-compose` must be installed and configured on the host machine.
 2) Copy all the files from the OJS install directory into the `app/www` directory, e.g.
@@ -24,7 +24,7 @@ git clone https://github.com/pkp/ojs tmp && mv tmp/* app/www && rm -rf tmp
 ```
 
 3) If present, remove all `node_modules` and `vendor` directories. Because the Docker environment may be running a different operating system than the host machine, all npm and composer dependencies must be installed from within the container (more on that below). For OJS this includes the following:
-    - `node_modules` in root directory
+    - `node_modules` in OJS root directory
     - `vendor` in `lib/pkp/lib`
     - `vendor` in `plugins/generic/citationStyleLanguage`
     - `vendor` in `plugins/paymethod/paypal`

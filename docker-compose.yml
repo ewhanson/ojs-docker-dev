@@ -25,6 +25,8 @@ services:
     # `apache2-foreground` Docker CMD at the end. It will install all the required npm and composer dependencies
     # needed for OJS to run. This remove the need to individually run each of the commands within the container
     # when the container is first started. If the dependencies are already installed, they will not be deleted or reinstalled.
+    #
+    # TODO: This is likely not best practice re: entry-point vs command, but it's working at the moment.
     command: sh /app/entrypoint.sh
   database:
     image: mariadb:latest
